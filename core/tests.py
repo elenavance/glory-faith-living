@@ -78,3 +78,25 @@ class BasicAppTests(TestCase):
         self.client.force_login(user)
         self.client.post(reverse("save-reflection"), {"title": "Empty", "body": "   "})
         self.assertFalse(FaithReflection.objects.filter(user=user).exists())
+
+    def test_user_cannot_delete_another_users_reflection(self):
+        owner = User.objects.create_user(username="journal-owner", password="safe-test-password-123")
+        other = User.objects.create_user(username="journal-other", password="safe-test-password-123")
+        entry = FaithReflection.objects.create(user=owner, title="Do not delete", body="Private entry.")
+        self.client.force_login(other)
+        response = self.client.post(reverse("delete-journal-entry", kwargs={
+            "kind": "reflection", "entry_id": entry.pk,
+        }))
+        self.assertRedirects(response, reverse("journey"))
+        self.assertTrue(FaithReflection.objects.filter(pk=entry.pk, user=owner).exists())
+
+    def test_user_can_delete_their_own_prayer_entry(self):
+        user = User.objects.create_user(username="journal-delete", password="safe-test-password-123")
+        entry = PrayerJournalEntry.objects.create(user=user, title="A prayer", body="Please guide me.")
+        self.client.force_login(user)
+        response = self.client.post(reverse("delete-journal-entry", kwargs={
+            "kind": "prayer", "entry_id": entry.pk,
+        }))
+        self.assertRedirects(response, reverse("journey"))
+        self.assertFalse(PrayerJournalEntry.objects.filter(pk=entry.pk).exists())
+
