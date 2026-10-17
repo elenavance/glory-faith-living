@@ -78,6 +78,23 @@ def save_prayer(request):
     return redirect("journey")
 
 
+
+@login_required
+@require_POST
+def delete_journal_entry(request, kind, entry_id):
+    """Delete only an entry owned by the currently signed-in user."""
+    model = FaithReflection if kind == "reflection" else PrayerJournalEntry if kind == "prayer" else None
+    if model is None:
+        messages.error(request, "That journal entry type is not available.")
+        return redirect("journey")
+    deleted, _ = model.objects.filter(user=request.user, pk=entry_id).delete()
+    if deleted:
+        messages.success(request, "Your journal entry has been deleted.")
+    else:
+        messages.error(request, "That entry was not found in your private journal.")
+    return redirect("journey")
+
+
 @require_GET
 def health(request):
     return JsonResponse({"status": "ok", "app": "glory-faith-living"})
