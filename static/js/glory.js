@@ -106,17 +106,47 @@
     toast("Your preferences have been saved on this device.");
   });
 
-  // This initial interface demonstrates the flow, not an active AI service.
-  $("#ask-form")?.addEventListener("submit", event => {
+  // Scripture guidance is a small curated reflection, not an AI or a personal prophecy.
+  $("#ask-form")?.addEventListener("submit", async event => {
     event.preventDefault();
+    const form = event.currentTarget;
     const question = $("#question").value.trim();
     const response = $("#ask-response");
     if (!question) {
       response.textContent = "Write a question or concern first, and we'll make space for it.";
       return;
     }
-    try { localStorage.setItem("glory-last-question", question); } catch (_) {}
-    response.textContent = "Your question is saved on this device for this prototype. Scripture search and personalized guidance will arrive in the next development phase.";
+    const submit = $("button[type='submit']", form);
+    if (submit) submit.disabled = true;
+    response.textContent = "Finding a Scripture reflection for your question…";
+    try {
+      const csrfToken = $("input[name='csrfmiddlewaretoken']", form)?.value || "";
+      const result = await fetch(form.action, {
+        method: "POST",
+        headers: {"X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest"},
+        body: new URLSearchParams({question})
+      });
+      const data = await result.json();
+      if (!result.ok) throw new Error(data.error || "We couldn't prepare a reflection just now.");
+      response.replaceChildren();
+      const heading = document.createElement("strong");
+      heading.className = "guidance-reference";
+      heading.textContent = data.reference;
+      const passage = document.createElement("p");
+      passage.className = "guidance-passage";
+      passage.textContent = "“" + data.passage + "”";
+      const reflectionHeading = document.createElement("strong");
+      reflectionHeading.textContent = "A moment to reflect";
+      const reflection = document.createElement("p");
+      reflection.textContent = data.reflection;
+      const note = document.createElement("small");
+      note.textContent = data.note;
+      response.append(heading, passage, reflectionHeading, reflection, note);
+    } catch (error) {
+      response.textContent = error.message || "The reflection couldn't be loaded. Please try again.";
+    } finally {
+      if (submit) submit.disabled = false;
+    }
   });
 
   // Installability and service worker; avoid interrupting the first visit.
