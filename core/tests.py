@@ -100,3 +100,19 @@ class BasicAppTests(TestCase):
         self.assertRedirects(response, reverse("journey"))
         self.assertFalse(PrayerJournalEntry.objects.filter(pk=entry.pk).exists())
 
+    def test_guidance_returns_relevant_scripture_without_storing_question(self):
+        question = "I feel anxious and worried about the future."
+        response = self.client.post(reverse("guidance"), {"question": question})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["reference"], "Philippians 4:6–7")
+        self.assertFalse(response.json()["stored"])
+
+    def test_guidance_rejects_empty_question(self):
+        response = self.client.post(reverse("guidance"), {"question": "   "})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+
+    def test_guidance_rejects_questions_over_limit(self):
+        response = self.client.post(reverse("guidance"), {"question": "a" * 701})
+        self.assertEqual(response.status_code, 400)
+
