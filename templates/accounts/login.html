@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Sign in to GLORY{% endblock %}
+{% block content %}
+<section class="account-page">
+  <div class="account-panel">
+    <div class="section-kicker">WELCOME BACK</div>
+    <h1>Return to <em>the quiet.</em></h1>
+    <p>Sign in to continue your private faith journey.</p>
+    {% if form.errors %}<div class="account-errors">Those details didn't match. Please try again.</div>{% endif %}
+    <form method="post" class="account-form">
+      {% csrf_token %}
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      <label for="{{ form.password.id_for_label }}">Password</label>
+      {{ form.password }}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="button button-gold" type="submit">Sign in securely <span>↗</span></button>
+    </form>
+    <p class="account-switch">New to GLORY? <a href="{% url 'signup' %}">Create an account</a></p>
+  </div>
+</section>
+{% endblock %}
