@@ -34,13 +34,13 @@
   <section class="saved-section">
     <div class="section-kicker">WORDS TO KEEP</div><h2>Your reflections</h2>
     {% for item in reflections %}
-      <article class="saved-entry"><div class="saved-meta">{{ item.created_at|date:"M j, Y · g:i A" }}{% if item.scripture_reference %} · {{ item.scripture_reference }}{% endif %}</div><h3>{{ item.title|default:"A quiet reflection" }}</h3><p>{{ item.body|linebreaksbr }}</p></article>
+      <article class="saved-entry"><div class="saved-meta">{{ item.created_at|date:"M j, Y · g:i A" }}{% if item.scripture_reference %} · {{ item.scripture_reference }}{% endif %}</div><h3>{{ item.title|default:"A quiet reflection" }}</h3><p>{{ item.body|linebreaksbr }}</p><form method="post" action="{% url 'delete-journal-entry' kind='reflection' entry_id=item.pk %}" class="delete-entry">{% csrf_token %}<button type="submit" onclick="return confirm('Delete this reflection permanently?')">Delete reflection</button></form></article>
     {% empty %}<p class="empty-state">Your reflections will appear here after you save your first one.</p>{% endfor %}
   </section>
   <section class="saved-section">
     <div class="section-kicker">PRAYER &amp; GRATITUDE</div><h2>Your prayer journal</h2>
     {% for item in prayers %}
-      <article class="saved-entry"><div class="saved-meta">{{ item.get_entry_type_display }} · {{ item.created_at|date:"M j, Y · g:i A" }}</div><h3>{{ item.title|default:item.get_entry_type_display }}</h3><p>{{ item.body|linebreaksbr }}</p></article>
+      <article class="saved-entry"><div class="saved-meta">{{ item.get_entry_type_display }} · {{ item.created_at|date:"M j, Y · g:i A" }}</div><h3>{{ item.title|default:item.get_entry_type_display }}</h3><p>{{ item.body|linebreaksbr }}</p><form method="post" action="{% url 'delete-journal-entry' kind='prayer' entry_id=item.pk %}" class="delete-entry">{% csrf_token %}<button type="submit" onclick="return confirm('Delete this prayer entry permanently?')">Delete entry</button></form></article>
     {% empty %}<p class="empty-state">Your prayer and gratitude entries will be kept here, private to your account.</p>{% endfor %}
   </section>
 </section>
