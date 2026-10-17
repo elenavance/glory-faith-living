@@ -14,6 +14,21 @@ class BasicAppTests(TestCase):
         self.assertContains(response, "GLORY")
         self.assertContains(response, "Daily Word")
 
+    def test_language_selector_is_disabled_until_translations_exist(self):
+        response = self.client.get("/")
+        self.assertContains(response, "Language selection coming soon")
+        self.assertContains(response, "disabled")
+
+    def test_favicon_redirects_to_brand_mark(self):
+        response = self.client.get("/favicon.ico")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/static/images/glory-mark.svg")
+
+    def test_reminder_ui_discloses_scheduling_is_not_active(self):
+        response = self.client.get("/")
+        self.assertContains(response, "Reminder scheduling is not available yet")
+        self.assertContains(response, "Planned reminder time (not active yet)")
+
     def test_health_endpoint(self):
         response = self.client.get("/health/")
         self.assertEqual(response.status_code, 200)

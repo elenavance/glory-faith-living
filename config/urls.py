@@ -2,11 +2,13 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
+from django.views.generic import RedirectView
 from django.views.generic import TemplateView
 from core import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("favicon.ico", RedirectView.as_view(url="/static/images/glory-mark.svg", permanent=False), name="favicon"),
     path("", views.home, name="home"),
     path("accounts/signup/", views.sign_up, name="signup"),
     path("accounts/login/", auth_views.LoginView.as_view(template_name="accounts/login.html"), name="login"),
