@@ -14,6 +14,7 @@ urlpatterns = [
     path("my-journey/", views.journey, name="journey"),
     path("my-journey/reflection/save/", views.save_reflection, name="save-reflection"),
     path("my-journey/prayer/save/", views.save_prayer, name="save-prayer"),
+    path("my-journey/<str:kind>/<int:entry_id>/delete/", views.delete_journal_entry, name="delete-journal-entry"),
     path("health/", views.health, name="health"),
     path("manifest.webmanifest", views.manifest, name="manifest"),
     path("service-worker.js", views.service_worker, name="service-worker"),
