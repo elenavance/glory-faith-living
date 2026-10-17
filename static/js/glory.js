@@ -27,21 +27,7 @@
     revealEls.forEach(el => observer.observe(el));
   }
 
-  // Persist a language preference for the localization phase; default content is English.
-  const languageButton = $("#language-button");
-  const languages = ["EN", "ID", "中文"];
-  let langIndex = Math.max(0, languages.indexOf(localStorage.getItem("glory-language") || "EN"));
-  const setLanguage = () => {
-    languageButton.textContent = languages[langIndex] + " ⌄";
-    languageButton.setAttribute("aria-label", "Language selected: " + languages[langIndex] + ". Click to change.");
-  };
-  setLanguage();
-  languageButton?.addEventListener("click", () => {
-    langIndex = (langIndex + 1) % languages.length;
-    localStorage.setItem("glory-language", languages[langIndex]);
-    setLanguage();
-    toast("Language preference saved. Full translations are planned for the localization phase.");
-  });
+  // Localization is not implemented yet. The control is disabled in the template so users are not told that changing a label changes the language of the app.
 
   // Optional spoken prayer uses the device's built-in text-to-speech; it is never enabled by default.
   const stopPrayerAudio = () => {
@@ -97,11 +83,14 @@
   const audioToggle = $("#audio-toggle");
   const timeInput = $("#reminder-time");
   try {
-    notifyToggle.checked = localStorage.getItem("glory-notifications") === "true";
-    audioToggle.checked = localStorage.getItem("glory-prayer-audio") === "true";
-    timeInput.value = localStorage.getItem("glory-reminder-time") || "08:00";
+    if (notifyToggle && audioToggle && timeInput) {
+      notifyToggle.checked = localStorage.getItem("glory-notifications") === "true";
+      audioToggle.checked = localStorage.getItem("glory-prayer-audio") === "true";
+      timeInput.value = localStorage.getItem("glory-reminder-time") || "08:00";
+    }
   } catch (_) { /* Persistent preferences may be unavailable in private browsing. */ }
   $("#save-reminders")?.addEventListener("click", async () => {
+    if (!notifyToggle || !audioToggle || !timeInput) return;
     let notificationEnabled = notifyToggle.checked;
     if (notificationEnabled && !("Notification" in window)) {
       notificationEnabled = false;
