@@ -43,6 +43,24 @@
     toast("Language preference saved. Full translations are planned for the localization phase.");
   });
 
+  // Optional spoken prayer uses the device's built-in text-to-speech; it is never enabled by default.
+  const stopPrayerAudio = () => {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  };
+  const speakPrayerText = () => {
+    try {
+      if (localStorage.getItem("glory-prayer-audio") !== "true" || !("speechSynthesis" in window)) return;
+      stopPrayerAudio();
+      const text = $("#prayer-text")?.textContent?.trim();
+      if (!text) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.88;
+      utterance.pitch = 0.96;
+      window.speechSynthesis.speak(utterance);
+    } catch (_) { /* Audio is optional and must never block prayer or reflection. */ }
+  };
+
   // Modal behavior.
   const openModal = (id) => {
     const modal = document.getElementById(id);
@@ -51,8 +69,10 @@
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
     $("[role='dialog'] button", modal)?.focus();
+    if (id === "prayer-modal") speakPrayerText();
   };
   const closeModal = (modal) => {
+    if (modal?.id === "prayer-modal") stopPrayerAudio();
     modal?.classList.remove("open");
     modal?.setAttribute("aria-hidden", "true");
     document.body.classList.remove("modal-open");
