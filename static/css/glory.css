@@ -92,3 +92,7 @@ h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:var(--serif);font-weight:400;line-h
 .saved-entry p{font-size:12px;line-height:1.9;color:#c0c6d0;margin-bottom:0;overflow-wrap:anywhere}
 .empty-state{font-size:11px;line-height:1.8;color:#8e98aa;padding:18px 0}
 @media(max-width:700px){.account-page{width:calc(100% - 28px);padding-top:42px}.account-panel{padding:25px 20px}.journey-page{width:calc(100% - 28px);padding-top:30px}.journey-page-head{padding:27px 20px 24px}.journey-page-head h1{font-size:48px}.logout-form{position:static;margin-top:18px}.journal-grid{grid-template-columns:1fr}.journal-card{padding:22px 18px}.saved-entry{padding:17px}.saved-section{margin-top:30px}}
+
+.delete-entry{margin-top:13px;text-align:right}
+.delete-entry button{border:0;background:transparent;color:#c6a1a1;font:9px var(--sans);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px}
+.delete-entry button:hover{color:#ffd4c7}
