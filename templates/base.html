@@ -27,7 +27,7 @@
       <a href="/#daily-word">Daily Word</a><a href="/#prayer">Prayer</a><a href="/#wisdom">Wisdom</a><a href="{% url 'journey' %}">My Journey</a>
     </nav>
     <div class="top-actions">
-      <button id="language-button" class="language-button" aria-label="Choose language">EN <span>⌄</span></button>
+      <button id="language-button" class="language-button" aria-label="Language selection coming soon" title="English is currently the only fully supported language" disabled>EN <span>·</span></button>
       {% if request.user.is_authenticated %}
         <a href="{% url 'journey' %}" class="profile-button" aria-label="My profile"><span>✧</span></a>
       {% else %}
