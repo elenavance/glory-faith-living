@@ -1,16 +1,87 @@
-"""Core views, health endpoint, and PWA resources."""
+"""Core pages, account flows, private journal actions, and PWA resources."""
 import json
+
+from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
+
+from .models import FaithReflection, PrayerJournalEntry
+
 
 def home(request):
     return render(request, "home.html", {"app_name": "GLORY", "tagline": "Faith, renewed every day"})
 
+
+def sign_up(request):
+    if request.user.is_authenticated:
+        return redirect("journey")
+    form = UserCreationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(request, "Welcome to GLORY. Your private faith journey begins here.")
+        return redirect("journey")
+    return render(request, "accounts/signup.html", {"form": form})
+
+
+@login_required
+def journey(request):
+    return render(request, "journey.html", {
+        "reflections": FaithReflection.objects.filter(user=request.user),
+        "prayers": PrayerJournalEntry.objects.filter(user=request.user),
+    })
+
+
+@login_required
+@require_POST
+def save_reflection(request):
+    title = request.POST.get("title", "").strip()[:120]
+    body = request.POST.get("body", "").strip()
+    scripture_reference = request.POST.get("scripture_reference", "").strip()[:120]
+    if not body:
+        messages.error(request, "Write a reflection before saving.")
+    elif len(body) > 4000:
+        messages.error(request, "Your reflection must be 4,000 characters or fewer.")
+    else:
+        FaithReflection.objects.create(
+            user=request.user, title=title, body=body,
+            scripture_reference=scripture_reference,
+        )
+        messages.success(request, "Your reflection has been saved privately.")
+    return redirect("journey")
+
+
+@login_required
+@require_POST
+def save_prayer(request):
+    title = request.POST.get("title", "").strip()[:120]
+    body = request.POST.get("body", "").strip()
+    entry_type = request.POST.get("entry_type", PrayerJournalEntry.EntryType.PRAYER)
+    valid_types = {choice[0] for choice in PrayerJournalEntry.EntryType.choices}
+    if entry_type not in valid_types:
+        entry_type = PrayerJournalEntry.EntryType.PRAYER
+    if not body:
+        messages.error(request, "Write a prayer or note before saving.")
+    elif len(body) > 4000:
+        messages.error(request, "Your entry must be 4,000 characters or fewer.")
+    else:
+        PrayerJournalEntry.objects.create(
+            user=request.user, title=title, body=body, entry_type=entry_type,
+            is_answered=(entry_type == PrayerJournalEntry.EntryType.ANSWERED),
+        )
+        messages.success(request, "Your entry has been saved privately.")
+    return redirect("journey")
+
+
 @require_GET
 def health(request):
     return JsonResponse({"status": "ok", "app": "glory-faith-living"})
+
 
 @require_GET
 def manifest(request):
@@ -26,11 +97,12 @@ def manifest(request):
     }
     return HttpResponse(json.dumps(data), content_type="application/manifest+json")
 
+
 @require_GET
 @never_cache
 def service_worker(request):
     js = """
-const CACHE = 'glory-shell-v1';
+const CACHE = 'glory-shell-v2';
 const CORE = ['/', '/offline/', '/manifest.webmanifest', '/static/css/glory.css', '/static/js/glory.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
@@ -43,7 +115,9 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
     event.respondWith(fetch(req).then(response => {
-      if (response.ok) caches.open(CACHE).then(cache => cache.put(req, response.clone()));
+      if (response.ok && !new URL(req.url).pathname.startsWith('/accounts/') && !new URL(req.url).pathname.startsWith('/my-journey/')) {
+        caches.open(CACHE).then(cache => cache.put(req, response.clone()));
+      }
       return response;
     }).catch(async () => (await caches.match(req)) || (await caches.match('/offline/'))));
     return;
