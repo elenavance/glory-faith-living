@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My Faith Journey — GLORY{% endblock %}
+{% block content %}
+<section class="account-page journey-page">
+  <div class="journey-page-head">
+    <div class="section-kicker">A SPACE THAT IS YOURS</div>
+    <h1>My faith <em>journey.</em></h1>
+    <p>Welcome, {{ request.user.username }}. Keep the moments, prayers, and words you want to carry with you.</p>
+    {% if messages %}{% for message in messages %}<p class="journal-message">{{ message }}</p>{% endfor %}{% endif %}
+    <form method="post" action="{% url 'logout' %}" class="logout-form">{% csrf_token %}<button class="button button-quiet" type="submit">Sign out</button></form>
+  </div>
+  <div class="journal-grid">
+    <section class="journal-card">
+      <div class="section-kicker">PAUSE &amp; REFLECT</div><h2>Save a reflection</h2>
+      <form method="post" action="{% url 'save-reflection' %}" class="account-form">
+        {% csrf_token %}
+        <label for="reflection-title">Title (optional)</label><input id="reflection-title" name="title" maxlength="120" placeholder="A lesson I'm carrying">
+        <label for="scripture-reference">Scripture reference (optional)</label><input id="scripture-reference" name="scripture_reference" maxlength="120" placeholder="e.g. Psalm 23:1">
+        <label for="reflection-body">Your reflection</label><textarea id="reflection-body" name="body" rows="5" maxlength="4000" required placeholder="What stood out to you? What would you like to remember?"></textarea>
+        <button class="button button-gold" type="submit">Save privately <span>↗</span></button>
+      </form>
+    </section>
+    <section class="journal-card">
+      <div class="section-kicker">A MOMENT WITH GOD</div><h2>Keep a prayer</h2>
+      <form method="post" action="{% url 'save-prayer' %}" class="account-form">
+        {% csrf_token %}
+        <label for="prayer-type">Entry type</label><select id="prayer-type" name="entry_type"><option value="prayer">Prayer intention</option><option value="gratitude">Gratitude</option><option value="answered">Answered prayer</option></select>
+        <label for="prayer-title">Title (optional)</label><input id="prayer-title" name="title" maxlength="120" placeholder="A person or hope on my heart">
+        <label for="prayer-body">Your words</label><textarea id="prayer-body" name="body" rows="5" maxlength="4000" required placeholder="Write freely. This entry belongs to your account."></textarea>
+        <button class="button button-gold" type="submit">Save prayer <span>↗</span></button>
+      </form>
+    </section>
+  </div>
+  <section class="saved-section">
+    <div class="section-kicker">WORDS TO KEEP</div><h2>Your reflections</h2>
+    {% for item in reflections %}
+      <article class="saved-entry"><div class="saved-meta">{{ item.created_at|date:"M j, Y · g:i A" }}{% if item.scripture_reference %} · {{ item.scripture_reference }}{% endif %}</div><h3>{{ item.title|default:"A quiet reflection" }}</h3><p>{{ item.body|linebreaksbr }}</p></article>
+    {% empty %}<p class="empty-state">Your reflections will appear here after you save your first one.</p>{% endfor %}
+  </section>
+  <section class="saved-section">
+    <div class="section-kicker">PRAYER &amp; GRATITUDE</div><h2>Your prayer journal</h2>
+    {% for item in prayers %}
+      <article class="saved-entry"><div class="saved-meta">{{ item.get_entry_type_display }} · {{ item.created_at|date:"M j, Y · g:i A" }}</div><h3>{{ item.title|default:item.get_entry_type_display }}</h3><p>{{ item.body|linebreaksbr }}</p></article>
+    {% empty %}<p class="empty-state">Your prayer and gratitude entries will be kept here, private to your account.</p>{% endfor %}
+  </section>
+</section>
+{% endblock %}
