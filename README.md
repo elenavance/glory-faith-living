@@ -70,6 +70,8 @@ Open http://127.0.0.1:8000/. Create an account through Sign in / Profile to test
 
 Keep the database file on persistent project storage and back it up regularly if SQLite is used. Do not upload a real .env, passwords, or private user data into GitHub.
 
+See [deployment/PYTHONANYWHERE.md](deployment/PYTHONANYWHERE.md) for the full hosting checklist and [deployment/pythonanywhere_wsgi.example.py](deployment/pythonanywhere_wsgi.example.py) for the WSGI example.
+
 ## CI checks
 
 GitHub Actions runs Django system checks, verifies migrations are up to date, and executes automated tests on the Phase 2 branch and on pull requests targeting main.
