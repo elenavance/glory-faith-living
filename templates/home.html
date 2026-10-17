@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}GLORY — A Life Closer to God{% endblock %}
+{% block content %}
+<section class="hero" id="home">
+  <div class="hero-image" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-content reveal">
+    <div class="eyebrow"><span class="eyebrow-line"></span> YOUR DAILY MOMENT OF GRACE <span class="eyebrow-line"></span></div>
+    <div class="halo-mark" aria-hidden="true"><span class="halo-cross">✝</span><span class="halo-star">✦</span></div>
+    <h1>Draw Near.<br><em>Live in His Light.</em></h1>
+    <p class="hero-subtitle">A sacred space for your faith, your questions, and the life God is leading you toward.</p>
+    <div class="hero-actions"><a class="button button-gold" href="#daily-word">Begin Today <span>↗</span></a><a class="button button-quiet" href="#discover">Explore Your Faith <span>↓</span></a></div>
+    <div class="verse-peek"><span class="verse-ornament">✧</span><p>“Be still, and know that I am God.”<small>PSALM 46:10 · DAILY REFLECTION</small></p><span class="verse-ornament">✧</span></div>
+  </div>
+  <div class="hero-bottom"><span>GRACE FOR EVERY SEASON</span><span class="scroll-cue"><span></span> SCROLL TO EXPLORE</span><span>EST. IN FAITH</span></div>
+</section>
+<section class="welcome-section section-wrap" id="discover">
+  <div class="section-kicker reveal">A MOMENT JUST FOR YOU</div>
+  <div class="welcome-heading reveal"><h2>Make room for <em>the sacred.</em></h2><p>Faith isn't only found in extraordinary moments. It's built in the quiet choices, the honest prayers, and the hope you carry into each new day.</p></div>
+  <div class="feature-grid">
+    <article class="feature-card feature-large reveal" id="daily-word">
+      <div class="card-art card-art-bible"><span class="art-cross">✝</span><span class="art-rays"></span></div>
+      <div class="feature-number">01 <span>· THE WORD</span></div>
+      <h3>Truth to carry<br>into your day.</h3>
+      <p>Meet Scripture with context, gentle reflection, and a meaningful way to live its wisdom.</p>
+      <a href="#daily-reading" class="text-link">Open today's reading <span>↗</span></a>
+    </article>
+    <article class="feature-card reveal" id="prayer">
+      <div class="card-art card-art-prayer"><span class="candle-glow"></span><span class="candle">✧</span></div>
+      <div class="feature-number">02 <span>· PRAYER</span></div>
+      <h3>A quiet place<br>to come as you are.</h3>
+      <p>Morning devotion, evening peace, gratitude, and prayers for the people you love.</p>
+      <a href="#prayer-settings" class="text-link">Enter the prayer space <span>↗</span></a>
+    </article>
+    <article class="feature-card reveal" id="wisdom">
+      <div class="card-art card-art-wisdom"><span>✦</span><i></i></div>
+      <div class="feature-number">03 <span>· EVERYDAY WISDOM</span></div>
+      <h3>Faith for the<br>life you're living.</h3>
+      <p>Thoughtful biblical perspectives for relationships, work, hardship, and new beginnings.</p>
+      <a href="#life-wisdom" class="text-link">Explore life &amp; faith <span>↗</span></a>
+    </article>
+  </div>
+</section>
+<section class="daily-reading section-wrap" id="daily-reading">
+  <div class="reading-panel reveal">
+    <div class="reading-light" aria-hidden="true"></div>
+    <div class="reading-copy"><div class="section-kicker">TODAY'S SCRIPTURE</div><span class="reading-label">A WORD FOR THE HEART</span>
+      <blockquote>“The Lord is my shepherd; I shall not want.”</blockquote>
+      <p class="scripture-ref">PSALM 23:1 <span>·</span> KING JAMES VERSION</p>
+      <p class="reading-reflection">You do not have to have every answer today. Let this image of a faithful shepherd remind you that you can take the next step without carrying the whole road at once.</p>
+      <button class="button button-outline" id="reflection-button">Take a moment to reflect <span>↗</span></button>
+    </div>
+    <div class="reading-art" role="img" aria-label="Golden light illuminating a peaceful mountain valley"><div class="sun-disc"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div><span class="art-caption">BE STILL. BE LED. BE HELD.</span></div>
+  </div>
+</section>
+<section class="life-section section-wrap" id="life-wisdom">
+  <div class="life-intro reveal"><div class="section-kicker">WHERE FAITH MEETS LIFE</div><h2>Whatever you're facing,<br><em>you don't walk alone.</em></h2><p>Explore thoughtful reflections grounded in Scripture. A starting point for prayer and discernment, never a substitute for trusted pastoral or professional support.</p></div>
+  <div class="life-topics reveal">
+    <a href="#ask" class="topic"><span class="topic-icon">♡</span><span><strong>Love &amp; Relationships</strong><small>Grace, boundaries, commitment</small></span><span class="topic-arrow">↗</span></a>
+    <a href="#ask" class="topic"><span class="topic-icon">⌂</span><span><strong>Family &amp; Home</strong><small>Patience, care, understanding</small></span><span class="topic-arrow">↗</span></a>
+    <a href="#ask" class="topic"><span class="topic-icon">✧</span><span><strong>Work &amp; Purpose</strong><small>Calling, diligence, direction</small></span><span class="topic-arrow">↗</span></a>
+    <a href="#ask" class="topic"><span class="topic-icon">☼</span><span><strong>Peace in Hard Seasons</strong><small>Hope, grief, courage</small></span><span class="topic-arrow">↗</span></a>
+    <a href="#ask" class="topic"><span class="topic-icon">◇</span><span><strong>Stewardship &amp; Money</strong><small>Wisdom, generosity, contentment</small></span><span class="topic-arrow">↗</span></a>
+  </div>
+</section>
+<section class="prayer-section section-wrap" id="prayer-settings">
+  <div class="prayer-card reveal"><div class="prayer-symbol">✝</div><div class="section-kicker">LET YOUR HEART REST</div><h2>There is room for<br><em>every honest prayer.</em></h2><p>Give thanks. Ask for strength. Sit in silence. Begin again. Your prayer life doesn't need to be perfect to be meaningful.</p>
+    <div class="prayer-actions"><button class="button button-gold" id="open-prayer">Begin a quiet prayer <span>↗</span></button><button class="button button-quiet" id="open-reminders">Set a daily reminder <span>⌁</span></button></div>
+  </div>
+</section>
+<section class="ask-section section-wrap" id="ask">
+  <div class="ask-copy reveal"><div class="section-kicker">QUESTIONS HELD WITH CARE</div><h2>Bring your questions.<br><em>Seek wisdom in the Word.</em></h2><p>Start exploring a question through relevant Scripture and thoughtful Christian perspectives. This preview is a framework; personalized AI answers will be added as a later development phase.</p></div>
+  <form class="ask-form reveal" id="ask-form"><label for="question">WHAT'S ON YOUR HEART TODAY?</label><textarea id="question" rows="3" placeholder="I'm looking for guidance about..." maxlength="700"></textarea><div class="ask-form-bottom"><span>For reflection, not a substitute for pastoral or professional care.</span><button class="round-submit" type="submit" aria-label="Submit question">↗</button></div><p class="form-response" id="ask-response" role="status"></p></form>
+</section>
+<section class="journey-section section-wrap" id="journey">
+  <div class="journey-banner reveal"><div><div class="section-kicker">A LITTLE CLOSER, EVERY DAY</div><h2>Your faith journey<br><em>starts where you are.</em></h2><p>Save the words that speak to you. Make space for prayer. Notice the quiet ways you grow.</p></div><a href="#profile" class="button button-gold">Your faith, your pace <span>↗</span></a><div class="journey-stars" aria-hidden="true">✦　·　✧　·　✦</div></div>
+</section>
+<footer class="footer" id="profile"><a class="brand footer-brand" href="#home"><span class="brand-mark"><img src="{% static 'images/glory-mark.svg' %}" alt=""></span><span class="brand-copy"><strong>GLORY</strong><small>FAITH &amp; LIVING</small></span></a><p>Rooted in the Word. Open to grace.</p><span class="footer-note">A companion for reflection — not a replacement for your faith community.</span><span class="footer-copyright">© 2026 GLORY · BUILT WITH REVERENCE</span></footer>
+<div class="modal-backdrop" id="prayer-modal" aria-hidden="true"><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="section-kicker">A QUIET MOMENT</div><h2 id="modal-title">Rest in God's presence.</h2><p id="prayer-text">God of mercy, meet me in this moment. Quiet my thoughts, steady my heart, and help me receive the grace I need for today. Teach me to walk in love, wisdom, and peace. Amen.</p><button class="button button-gold" data-close-modal>Carry this peace with me</button></section></div>
+<div class="modal-backdrop" id="reminder-modal" aria-hidden="true"><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="reminder-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="section-kicker">YOUR DAILY RHYTHM</div><h2 id="reminder-title">Make space for prayer.</h2><p>Choose how you'd like this app to remind you. Browser notifications require permission and support from your device. Audio and reminders are kept as separate preferences.</p><label class="setting-row"><span><strong>Prayer reminder notification</strong><small>Receive a gentle daily reminder</small></span><input type="checkbox" id="notify-toggle"></label><label class="setting-row"><span><strong>Prayer audio</strong><small>Enable audio when a prayer is opened</small></span><input type="checkbox" id="audio-toggle"></label><label class="time-setting">Reminder time <input type="time" id="reminder-time" value="08:00"></label><button class="button button-gold" id="save-reminders">Save preferences</button><p class="modal-hint" id="reminder-feedback" role="status"></p></section></div>
+{% endblock %}
