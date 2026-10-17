@@ -78,4 +78,4 @@ GitHub Actions runs Django system checks, verifies migrations are up to date, an
 
 ## Current stage
 
-Phase 2: account flows and private faith journal are implemented on the phase-2-faith-features development branch. Full translations, scheduled notifications, personalized AI guidance, and final hosting setup remain future tasks.
+Phase 2: account flows, private faith journal, curated Scripture guidance, optional spoken prayer, and PythonAnywhere preparation are merged to main. Full translations, scheduled notifications, personalized AI guidance, and final hosting setup remain future tasks. Full translations, scheduled notifications, personalized AI guidance, and final hosting setup remain future tasks.
