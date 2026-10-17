@@ -1,0 +1,1 @@
+"""GLORY project configuration package."""
