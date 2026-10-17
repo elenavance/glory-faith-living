@@ -37,6 +37,53 @@ def journey(request):
     })
 
 
+
+@require_POST
+def guidance(request):
+    """Offer a small, curated Scripture reflection without storing the user's question."""
+    question = request.POST.get("question", "").strip()
+    if not question:
+        return JsonResponse({"error": "Write a question first so we can find a helpful reflection."}, status=400)
+    if len(question) > 700:
+        return JsonResponse({"error": "Please keep your question to 700 characters or fewer."}, status=400)
+
+    normalized = question.casefold()
+    topics = [
+        (("anxious", "anxiety", "worry", "worried", "fear", "afraid", "stress", "panic"),
+         "Philippians 4:6–7", "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God.",
+         "You do not have to solve everything at once. Name what is weighing on you, take one slow breath, and consider one small next step you can take today. If this is overwhelming or persistent, reach out to someone you trust or a qualified professional."),
+        (("grief", "grieving", "death", "died", "loss", "mourning", "heartbroken"),
+         "Psalm 34:18", "The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit.",
+         "Grief does not need to be rushed or hidden. Give yourself permission to mourn, accept practical care, and remember that asking for help is not a failure of faith."),
+        (("relationship", "marriage", "partner", "boyfriend", "girlfriend", "love", "dating", "family"),
+         "1 Corinthians 13:4", "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up.",
+         "Love includes kindness, patience, honesty, and respect. Reflect on what a caring next step could look like while keeping healthy boundaries and your safety in view."),
+        (("work", "career", "purpose", "job", "calling", "future", "direction"),
+         "Colossians 3:23", "And whatsoever ye do, do it heartily, as to the Lord, and not unto men;",
+         "You may not see the whole path yet. Focus on the next faithful, practical action, seek wise counsel, and allow room for your plans to develop."),
+        (("money", "debt", "finance", "financial", "bills", "poor", "wealth"),
+         "Proverbs 3:5", "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+         "Faith can support patience and wise stewardship, but it does not promise a particular financial outcome. Review the facts, avoid rushed decisions, and seek qualified financial advice when needed."),
+        (("forgive", "forgiveness", "resent", "anger", "betray", "betrayed"),
+         "Ephesians 4:32", "And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven you.",
+         "Forgiveness can be a process, not an instant feeling. It does not mean excusing harm, removing boundaries, or returning to an unsafe situation."),
+        (("lonely", "loneliness", "alone", "isolated", "friendless"),
+         "Deuteronomy 31:8", "And the LORD, he it is that doth go before thee; he will be with thee, he will not fail thee, neither forsake thee.",
+         "Feeling alone can be painful, even for a person of faith. Consider reaching out to one trusted person or a supportive faith community; connection can begin with a small message."),
+    ]
+    selected = next((item for item in topics if any(word in normalized for word in item[0])), None)
+    if selected is None:
+        selected = ("", "James 1:5", "If any of you lack wisdom, let him ask of God, that giveth to all men liberally, and upbraideth not; and it shall be given him.",
+                    "Bring your question honestly to prayer, consider what is within your control, and seek the perspective of a wise and trusted person. You do not need to decide everything today.")
+    return JsonResponse({
+        "reference": selected[1],
+        "passage": selected[2],
+        "reflection": selected[3],
+        "note": "A Scripture-based reflection for consideration, not a personal prophecy or a substitute for pastoral or professional support.",
+        "stored": False,
+    })
+
+
 @login_required
 @require_POST
 def save_reflection(request):
