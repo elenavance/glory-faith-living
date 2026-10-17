@@ -2,8 +2,10 @@
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.environ.get("SECRET_KEY", "development-only-change-this-in-production")
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "*").split(",") if host.strip()]

@@ -24,17 +24,24 @@
       <span class="brand-copy"><strong>GLORY</strong><small>FAITH &amp; LIVING</small></span>
     </a>
     <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="#daily-word">Daily Word</a><a href="#prayer">Prayer</a><a href="#wisdom">Wisdom</a><a href="#journey">My Journey</a>
+      <a href="/#daily-word">Daily Word</a><a href="/#prayer">Prayer</a><a href="/#wisdom">Wisdom</a><a href="{% url 'journey' %}">My Journey</a>
     </nav>
-    <div class="top-actions"><button id="language-button" class="language-button" aria-label="Choose language">EN <span>⌄</span></button><a href="#journey" class="profile-button" aria-label="My profile"><span>✧</span></a></div>
+    <div class="top-actions">
+      <button id="language-button" class="language-button" aria-label="Choose language">EN <span>⌄</span></button>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'journey' %}" class="profile-button" aria-label="My profile"><span>✧</span></a>
+      {% else %}
+        <a href="{% url 'login' %}" class="profile-button" aria-label="Sign in"><span>↗</span></a>
+      {% endif %}
+    </div>
   </header>
   <main>{% block content %}{% endblock %}</main>
   <nav class="mobile-nav" aria-label="Mobile navigation">
-    <a class="active" href="#home"><span>⌂</span><small>Home</small></a>
-    <a href="#discover"><span>✧</span><small>Discover</small></a>
-    <a class="nav-ask" href="#ask"><span>✦</span><small>Ask</small></a>
-    <a href="#journey"><span>♡</span><small>My Faith</small></a>
-    <a href="#profile"><span>◉</span><small>Profile</small></a>
+    <a class="active" href="/#home"><span>⌂</span><small>Home</small></a>
+    <a href="/#discover"><span>✧</span><small>Discover</small></a>
+    <a class="nav-ask" href="/#ask"><span>✦</span><small>Ask</small></a>
+    <a href="{% url 'journey' %}"><span>♡</span><small>My Faith</small></a>
+    <a href="{% if request.user.is_authenticated %}{% url 'journey' %}{% else %}{% url 'signup' %}{% endif %}"><span>◉</span><small>Profile</small></a>
   </nav>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/static/js/glory.js" defer></script>
