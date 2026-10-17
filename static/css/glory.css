@@ -96,3 +96,9 @@ h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:var(--serif);font-weight:400;line-h
 .delete-entry{margin-top:13px;text-align:right}
 .delete-entry button{border:0;background:transparent;color:#c6a1a1;font:9px var(--sans);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px}
 .delete-entry button:hover{color:#ffd4c7}
+
+.guidance-reference{display:block;color:var(--gold2);font:600 10px var(--sans);letter-spacing:.12em;margin-top:18px}
+.guidance-passage{font:italic 20px/1.6 var(--serif);color:#f3ead7;margin:9px 0 15px}
+.form-response>p{font-size:11px;line-height:1.85;color:#c0c7d2;margin:8px 0 12px}
+.form-response>small{display:block;color:#8e98aa;font-size:9px;line-height:1.7;margin-top:12px}
+.ask-form button:disabled{opacity:.6;cursor:wait}
