@@ -84,6 +84,35 @@ def guidance(request):
     })
 
 
+@require_POST
+def prepare_reflection_save(request):
+    """Save an explicitly selected guidance result or hold it for guest signup."""
+    reference = request.POST.get("scripture_reference", "").strip()[:120]
+    passage = request.POST.get("passage", "").strip()
+    reflection = request.POST.get("reflection", "").strip()
+    body = f"{passage}\n\n{reflection}"
+    if not reference or not passage or not reflection or len(body) > 4000:
+        return JsonResponse({"error": "This reflection could not be saved. Please try again."}, status=400)
+
+    title = f"Scripture reflection: {reference}"[:120]
+    if request.user.is_authenticated:
+        FaithReflection.objects.create(
+            user=request.user,
+            title=title,
+            body=body,
+            scripture_reference=reference,
+        )
+        return JsonResponse({"ok": True, "saved": True})
+
+    request.session["pending_guidance_reflection"] = {
+        "title": title,
+        "body": body,
+        "scripture_reference": reference,
+    }
+    request.session.set_expiry(3600)
+    return JsonResponse({"ok": True, "saved": False, "signup_url": "/accounts/signup/"})
+
+
 @login_required
 @require_POST
 def save_reflection(request):
