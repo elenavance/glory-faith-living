@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import FaithReflection, PrayerJournalEntry
+from .models import FaithReflection, PrayerJournalEntry, VipTrial
 
 User = get_user_model()
 
@@ -202,3 +202,47 @@ class GuestGuidanceSaveTests(TestCase):
         )
         self.assertEqual(response.status_code, 400)
         self.assertFalse(FaithReflection.objects.exists())
+
+
+class VipTrialTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="vip-member", password="safe-test-password-123")
+
+    def test_viewing_membership_does_not_start_trial(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(reverse("membership")).status_code, 200)
+        self.assertFalse(VipTrial.objects.filter(user=self.user).exists())
+
+    def test_trial_starts_only_after_explicit_post(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("start-vip-trial"))
+        trial = VipTrial.objects.get(user=self.user)
+        self.assertRedirects(response, reverse("guided-study"))
+        self.assertTrue(trial.is_active)
+        expected_month = trial.started_at.month % 12 + 1
+        self.assertEqual(trial.ends_at.month, expected_month)
+        self.assertContains(self.client.get(reverse("guided-study")), "A week in the")
+
+    def test_restarting_trial_does_not_extend_expiry(self):
+        self.client.force_login(self.user)
+        self.client.post(reverse("start-vip-trial"))
+        original_end = VipTrial.objects.get(user=self.user).ends_at
+        self.client.post(reverse("start-vip-trial"))
+        self.assertEqual(VipTrial.objects.get(user=self.user).ends_at, original_end)
+
+    def test_guest_cannot_start_trial(self):
+        response = self.client.post(reverse("start-vip-trial"))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(VipTrial.objects.exists())
+
+    def test_expired_trial_cannot_open_study_but_journal_remains_free(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        VipTrial.objects.create(
+            user=self.user,
+            started_at=timezone.now() - timedelta(days=40),
+            ends_at=timezone.now() - timedelta(days=10),
+        )
+        self.client.force_login(self.user)
+        self.assertRedirects(self.client.get(reverse("guided-study")), reverse("membership"))
+        self.assertEqual(self.client.get(reverse("journey")).status_code, 200)
