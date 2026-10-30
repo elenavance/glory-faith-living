@@ -1,6 +1,7 @@
 """Private, account-owned records for the GLORY faith journey."""
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class FaithReflection(models.Model):
@@ -50,3 +51,14 @@ class PrayerJournalEntry(models.Model):
 
     def __str__(self):
         return self.title or f"{self.get_entry_type_display()} — {self.created_at:%Y-%m-%d}"
+
+
+class VipTrial(models.Model):
+    """One explicitly started, non-renewing VIP trial per account."""
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vip_trial")
+    started_at = models.DateTimeField()
+    ends_at = models.DateTimeField()
+
+    @property
+    def is_active(self):
+        return self.ends_at > timezone.now()
