@@ -110,3 +110,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   outline-offset: 2px;
   box-shadow: 0 0 0 5px rgba(0, 0, 0, .85) !important;
 }
+
+.guidance-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}
+.guidance-actions .button{min-height:44px}
+@media(max-width:560px){.guidance-actions .button{flex:1 1 100%}}
