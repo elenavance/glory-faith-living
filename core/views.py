@@ -23,6 +23,19 @@ def sign_up(request):
     form = UserCreationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         user = form.save()
+        pending = request.session.get("pending_guidance_reflection")
+        if isinstance(pending, dict):
+            title = str(pending.get("title", ""))[:120]
+            body = str(pending.get("body", ""))
+            reference = str(pending.get("scripture_reference", ""))[:120]
+            if title and body.strip() and len(body) <= 4000 and reference:
+                FaithReflection.objects.create(
+                    user=user,
+                    title=title,
+                    body=body,
+                    scripture_reference=reference,
+                )
+                request.session.pop("pending_guidance_reflection", None)
         login(request, user)
         messages.success(request, "Welcome to GLORY. Your private faith journey begins here.")
         return redirect("journey")
