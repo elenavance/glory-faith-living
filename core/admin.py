@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FaithReflection, PrayerJournalEntry
+from .models import FaithReflection, PrayerJournalEntry, VipTrial
 
 
 @admin.register(FaithReflection)
@@ -17,3 +17,10 @@ class PrayerJournalEntryAdmin(admin.ModelAdmin):
     list_filter = ("entry_type", "is_answered", "created_at")
     search_fields = ("user__username", "title", "body")
     readonly_fields = ("created_at",)
+
+
+@admin.register(VipTrial)
+class VipTrialAdmin(admin.ModelAdmin):
+    list_display = ("user", "started_at", "ends_at")
+    search_fields = ("user__username",)
+    readonly_fields = ("started_at", "ends_at")
