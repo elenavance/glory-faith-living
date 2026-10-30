@@ -150,7 +150,65 @@
       reflection.textContent = data.reflection;
       const note = document.createElement("small");
       note.textContent = data.note;
-      response.append(heading, passage, reflectionHeading, reflection, note);
+      const actions = document.createElement("div");
+      actions.className = "guidance-actions";
+      const saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "button button-gold";
+      saveButton.textContent = "Save privately";
+      saveButton.addEventListener("click", async () => {
+        saveButton.disabled = true;
+        try {
+          const csrfToken = $("input[name='csrfmiddlewaretoken']", form)?.value || "";
+          const saveResponse = await fetch(form.dataset.saveUrl, {
+            method: "POST",
+            headers: {"X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest"},
+            body: new URLSearchParams({
+              scripture_reference: data.reference,
+              passage: data.passage,
+              reflection: data.reflection
+            })
+          });
+          const saved = await saveResponse.json();
+          if (!saveResponse.ok || !saved.ok) throw new Error(saved.error || "This reflection could not be saved.");
+          if (saved.saved) {
+            saveButton.textContent = "Saved privately";
+            saveButton.disabled = true;
+            const journeyLink = document.createElement("a");
+            journeyLink.href = form.dataset.journeyUrl;
+            journeyLink.className = "text-link";
+            journeyLink.textContent = "View your private journal";
+            actions.appendChild(journeyLink);
+          } else {
+            window.location.href = saved.signup_url || form.dataset.signupUrl;
+          }
+        } catch (error) {
+          response.appendChild(document.createTextNode(error.message || "This reflection could not be saved."));
+          saveButton.disabled = false;
+        }
+      });
+      const shareButton = document.createElement("button");
+      shareButton.type = "button";
+      shareButton.className = "button button-quiet";
+      shareButton.textContent = "Share reflection";
+      shareButton.addEventListener("click", async () => {
+        const shareText = data.reference + "\n\n" + data.passage + "\n\n" + data.reflection;
+        try {
+          if (navigator.share) {
+            await navigator.share({title: "A Scripture reflection — GLORY", text: shareText});
+            toast("Your reflection was shared.");
+          } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(shareText);
+            toast("Reflection copied. You can paste it into a message.");
+          } else {
+            throw new Error("Sharing isn't available in this browser.");
+          }
+        } catch (error) {
+          if (error.name !== "AbortError") toast(error.message || "The reflection could not be shared.");
+        }
+      });
+      actions.append(saveButton, shareButton);
+      response.append(heading, passage, reflectionHeading, reflection, note, actions);
     } catch (error) {
       response.textContent = error.message || "The reflection couldn't be loaded. Please try again.";
     } finally {
