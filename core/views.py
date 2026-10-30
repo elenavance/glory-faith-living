@@ -1,4 +1,5 @@
 """Core pages, account flows, private journal actions, and PWA resources."""
+import calendar
 import json
 
 from django.contrib import messages
@@ -7,10 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import FaithReflection, PrayerJournalEntry
+from .models import FaithReflection, PrayerJournalEntry, VipTrial
 
 
 def home(request):
@@ -23,6 +26,19 @@ def sign_up(request):
     form = UserCreationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         user = form.save()
+        pending = request.session.get("pending_guidance_reflection")
+        if isinstance(pending, dict):
+            title = str(pending.get("title", ""))[:120]
+            body = str(pending.get("body", ""))
+            reference = str(pending.get("scripture_reference", ""))[:120]
+            if title and body.strip() and len(body) <= 4000 and reference:
+                FaithReflection.objects.create(
+                    user=user,
+                    title=title,
+                    body=body,
+                    scripture_reference=reference,
+                )
+                request.session.pop("pending_guidance_reflection", None)
         login(request, user)
         messages.success(request, "Welcome to GLORY. Your private faith journey begins here.")
         return redirect("journey")
@@ -34,7 +50,52 @@ def journey(request):
     return render(request, "journey.html", {
         "reflections": FaithReflection.objects.filter(user=request.user),
         "prayers": PrayerJournalEntry.objects.filter(user=request.user),
+        "trial": VipTrial.objects.filter(user=request.user).first(),
     })
+
+
+def membership(request):
+    trial = VipTrial.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    return render(request, "membership.html", {"trial": trial})
+
+
+@login_required
+@require_POST
+def start_vip_trial(request):
+    now = timezone.now()
+    month = now.month % 12 + 1
+    year = now.year + (1 if now.month == 12 else 0)
+    day = min(now.day, calendar.monthrange(year, month)[1])
+    ends_at = now.replace(year=year, month=month, day=day)
+    trial, created = VipTrial.objects.get_or_create(
+        user=request.user,
+        defaults={"started_at": now, "ends_at": ends_at},
+    )
+    if created:
+        messages.success(request, f"Your VIP month is active until {timezone.localtime(trial.ends_at):%B %d, %Y}. No payment method or automatic charge.")
+    elif trial.is_active:
+        messages.info(request, f"Your VIP month is already active until {timezone.localtime(trial.ends_at):%B %d, %Y}.")
+    else:
+        messages.info(request, "Your one-time VIP trial has ended. Your daily Scripture and journal remain available.")
+    return redirect("guided-study" if trial.is_active else "membership")
+
+
+@login_required
+def guided_study(request):
+    trial = VipTrial.objects.filter(user=request.user).first()
+    if not trial or not trial.is_active:
+        messages.info(request, "The guided study is available during your VIP month. Your daily Scripture and journal remain free.")
+        return redirect("membership")
+    days = [
+        {"day": 1, "reference": "Psalm 1:1–3", "verse": "And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither.", "reflection": "Growth often begins quietly. Consider which habits help you stay rooted in what is life-giving.", "prompt": "What is one small practice you want to make room for this week?"},
+        {"day": 2, "reference": "Proverbs 3:5–6", "verse": "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.", "reflection": "Trust can include asking questions, seeking wise counsel, and taking the next thoughtful step.", "prompt": "Where could you use patience before deciding what comes next?"},
+        {"day": 3, "reference": "Matthew 6:31–34", "verse": "Take therefore no thought for the morrow: for the morrow shall take thought for the things of itself.", "reflection": "This passage invites attention to today; it does not dismiss planning or hardship.", "prompt": "What can you address today, and what can you set down for now?"},
+        {"day": 4, "reference": "Psalm 23:1–3", "verse": "The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures: he leadeth me beside the still waters.", "reflection": "Rest is part of a faithful life. Notice what helps you pause and receive care.", "prompt": "What would a genuinely restful moment look like today?"},
+        {"day": 5, "reference": "Micah 6:8", "verse": "What doth the LORD require of thee, but to do justly, and to love mercy, and to walk humbly with thy God?", "reflection": "Justice, mercy, and humility offer a practical lens for ordinary choices.", "prompt": "Which quality would guide one conversation or action today?"},
+        {"day": 6, "reference": "Romans 12:10", "verse": "Be kindly affectioned one to another with brotherly love; in honour preferring one another;", "reflection": "Care and honesty belong together. Kindness can coexist with boundaries and safety.", "prompt": "How can you show care while honoring a healthy boundary?"},
+        {"day": 7, "reference": "Galatians 5:22–23", "verse": "The fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, meekness, temperance.", "reflection": "These qualities can be invitations to practice, not a scorecard for judging yourself.", "prompt": "Which quality would you like to practice gently this week?"},
+    ]
+    return render(request, "guided_study.html", {"days": days, "trial": trial})
 
 
 
@@ -82,6 +143,35 @@ def guidance(request):
         "note": "A Scripture-based reflection for consideration, not a personal prophecy or a substitute for pastoral or professional support.",
         "stored": False,
     })
+
+
+@require_POST
+def prepare_reflection_save(request):
+    """Save an explicitly selected guidance result or hold it for guest signup."""
+    reference = request.POST.get("scripture_reference", "").strip()[:120]
+    passage = request.POST.get("passage", "").strip()
+    reflection = request.POST.get("reflection", "").strip()
+    body = f"{passage}\n\n{reflection}"
+    if not reference or not passage or not reflection or len(body) > 4000:
+        return JsonResponse({"error": "This reflection could not be saved. Please try again."}, status=400)
+
+    title = f"Scripture reflection: {reference}"[:120]
+    if request.user.is_authenticated:
+        FaithReflection.objects.create(
+            user=request.user,
+            title=title,
+            body=body,
+            scripture_reference=reference,
+        )
+        return JsonResponse({"ok": True, "saved": True})
+
+    request.session["pending_guidance_reflection"] = {
+        "title": title,
+        "body": body,
+        "scripture_reference": reference,
+    }
+    request.session.set_expiry(3600)
+    return JsonResponse({"ok": True, "saved": False, "signup_url": reverse("signup")})
 
 
 @login_required

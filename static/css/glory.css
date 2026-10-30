@@ -102,3 +102,15 @@ h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:var(--serif);font-weight:400;line-h
 .form-response>p{font-size:11px;line-height:1.85;color:#c0c7d2;margin:8px 0 12px}
 .form-response>small{display:block;color:#8e98aa;font-size:9px;line-height:1.7;margin-top:12px}
 .ask-form button:disabled{opacity:.6;cursor:wait}
+
+
+/* Clear keyboard focus across mouse and touch interfaces. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #fff !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, .85) !important;
+}
+
+.guidance-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}
+.guidance-actions .button{min-height:44px}
+@media(max-width:560px){.guidance-actions .button{flex:1 1 100%}}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Guided Scripture Study — GLORY{% endblock %}
+{% block content %}
+<section class="account-page">
+  <div class="journey-page-head">
+    <div class="section-kicker">YOUR VIP MONTH · ENDS {{ trial.ends_at|date:"F j, Y" }}</div>
+    <h1>A week in the <em>Word.</em></h1>
+    <p>A gentle seven-day study. Read at your own pace; this is a prompt for reflection, not a personal prophecy or professional advice.</p>
+  </div>
+  <div class="saved-section">
+    {% for item in days %}
+    <article class="saved-entry">
+      <div class="saved-meta">DAY {{ item.day }} · {{ item.reference }}</div>
+      <h2>{{ item.reference }}</h2>
+      <blockquote>{{ item.verse }}</blockquote>
+      <p>{{ item.reflection }}</p>
+      <p><strong>Reflect:</strong> {{ item.prompt }}</p>
+      <a class="text-link" href="{% url 'journey' %}">Save a thought privately in your journal ↗</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

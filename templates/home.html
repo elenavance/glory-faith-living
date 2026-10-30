@@ -54,6 +54,16 @@
     <div class="reading-art" role="img" aria-label="Golden light illuminating a peaceful mountain valley"><div class="sun-disc"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div><span class="art-caption">BE STILL. BE LED. BE HELD.</span></div>
   </div>
 </section>
+<section class="section-wrap" id="vip-study">
+  <div class="reading-panel reveal">
+    <div class="reading-copy">
+      <div class="section-kicker">A MONTH OF DEEPER STUDY</div>
+      <h2>Make space for a <em>guided journey.</em></h2>
+      <p>Try seven days of Scripture, gentle reflections, and prompts during your one-month VIP trial. No card and no automatic charge. Daily Scripture and your basic journal stay free afterward.</p>
+      <a class="button button-gold" href="{% url 'membership' %}">Explore the free VIP month <span>↗</span></a>
+    </div>
+  </div>
+</section>
 <section class="life-section section-wrap" id="life-wisdom">
   <div class="life-intro reveal"><div class="section-kicker">WHERE FAITH MEETS LIFE</div><h2>Whatever you're facing,<br><em>you don't walk alone.</em></h2><p>Explore thoughtful reflections grounded in Scripture. A starting point for prayer and discernment, never a substitute for trusted pastoral or professional support.</p></div>
   <div class="life-topics reveal">
@@ -71,7 +81,7 @@
 </section>
 <section class="ask-section section-wrap" id="ask">
   <div class="ask-copy reveal"><div class="section-kicker">QUESTIONS HELD WITH CARE</div><h2>Bring your questions.<br><em>Seek wisdom in the Word.</em></h2><p>Start exploring a question through relevant Scripture and thoughtful Christian perspectives. This preview is a framework; personalized AI answers will be added as a later development phase.</p></div>
-  <form class="ask-form reveal" id="ask-form" action="{% url 'guidance' %}" method="post">{% csrf_token %}<label for="question">WHAT'S ON YOUR HEART TODAY?</label><textarea id="question" rows="3" placeholder="I'm looking for guidance about..." maxlength="700"></textarea><div class="ask-form-bottom"><span>For reflection, not a substitute for pastoral or professional care.</span><button class="round-submit" type="submit" aria-label="Submit question">↗</button></div><div class="form-response" id="ask-response" role="status" aria-live="polite"></div></form>
+  <form class="ask-form reveal" id="ask-form" action="{% url 'guidance' %}" data-save-url="{% url 'prepare-reflection-save' %}" data-signup-url="{% url 'signup' %}" data-journey-url="{% url 'journey' %}" method="post">{% csrf_token %}<label for="question">WHAT'S ON YOUR HEART TODAY?</label><textarea id="question" rows="3" placeholder="I'm looking for guidance about..." maxlength="700"></textarea><div class="ask-form-bottom"><span>For reflection, not a substitute for pastoral or professional care.</span><button class="round-submit" type="submit" aria-label="Submit question">↗</button></div><div class="form-response" id="ask-response" role="status" aria-live="polite"></div></form>
 </section>
 <section class="journey-section section-wrap" id="journey">
   <div class="journey-banner reveal"><div><div class="section-kicker">A LITTLE CLOSER, EVERY DAY</div><h2>Your faith journey<br><em>starts where you are.</em></h2><p>Save the words that speak to you. Make space for prayer. Notice the quiet ways you grow.</p></div><a href="{% if request.user.is_authenticated %}{% url 'journey' %}{% else %}{% url 'signup' %}{% endif %}" class="button button-gold">Your faith, your pace <span>↗</span></a><div class="journey-stars" aria-hidden="true">✦　·　✧　·　✦</div></div>
