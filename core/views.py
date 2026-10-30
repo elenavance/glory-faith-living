@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 
@@ -123,7 +124,7 @@ def prepare_reflection_save(request):
         "scripture_reference": reference,
     }
     request.session.set_expiry(3600)
-    return JsonResponse({"ok": True, "saved": False, "signup_url": "/accounts/signup/"})
+    return JsonResponse({"ok": True, "saved": False, "signup_url": reverse("signup")})
 
 
 @login_required
