@@ -155,7 +155,7 @@ class GuestGuidanceSaveTests(TestCase):
         session = self.client.session
         session["pending_guidance_reflection"] = {
             "title": "Scripture reflection: Psalm 23:1",
-            "body": "The Lord is my shepherd.\\n\\nI can take the next step.",
+            "body": "The Lord is my shepherd.\n\nI can take the next step.",
             "scripture_reference": "Psalm 23:1",
         }
         session.save()
