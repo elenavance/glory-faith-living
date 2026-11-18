@@ -3,13 +3,33 @@ import os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
-SECRET_KEY = os.environ.get("SECRET_KEY", "development-only-change-this-in-production")
+
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "*").split(",") if host.strip()]
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+
+# FIX: Fail fast if no real SECRET_KEY in production
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY or SECRET_KEY == "development-only-change-this-in-production":
+    if DEBUG:
+        SECRET_KEY = "development-only-change-this-in-production"
+    else:
+        raise ImproperlyConfigured("SECRET_KEY must be set in production via .env")
+
+# FIX: No more ALLOWED_HOSTS="*" in production
+_allowed = os.environ.get("ALLOWED_HOSTS", "")
+if not _allowed:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"] if DEBUG else []
+else:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()]
+if not DEBUG and ("*" in ALLOWED_HOSTS or not ALLOWED_HOSTS):
+    raise ImproperlyConfigured("ALLOWED_HOSTS must be set explicitly in production, e.g. gloryfaithliving.com,www.gloryfaithliving.com")
+
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+if not DEBUG and not CSRF_TRUSTED_ORIGINS:
+    raise ImproperlyConfigured("CSRF_TRUSTED_ORIGINS must be set in production, e.g. https://gloryfaithliving.com")
 
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
@@ -36,6 +56,7 @@ TEMPLATES = [{
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
+        "django.template.context_processors.i18n",
     ]},
 }]
 WSGI_APPLICATION = "config.wsgi.application"
@@ -53,8 +74,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+# V1 = English + Bahasa Indonesia only. Add zh-hans back when translations are real.
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", "English"), ("id", "Bahasa Indonesia"), ("zh-hans", "简体中文")]
+LANGUAGES = [("en", "English"), ("id", "Bahasa Indonesia")]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
 TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Jakarta")
 USE_I18N = True
 USE_TZ = True
@@ -66,6 +91,32 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+}
