@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width:640px;margin:1rem auto;padding:0 1rem;">
+  <div style="background:#fef9e7;border:1px solid #d4af37;border-radius:12px;padding:.9rem 1rem;display:flex;gap:.6rem;align-items:center;">
+    <span aria-hidden="true" style="font-size:1.4rem;">🔒</span>
+    <p style="margin:0;"><strong>Only you can see this.</strong> / <strong>Hanya Anda yang bisa melihat ini.</strong><br><span style="font-size:.9rem;color:#555;">Delete anytime. Autosave draft on this device only. / Hapus kapan saja. Draft tersimpan otomatis di perangkat ini saja.</span></p>
+    <button id="hideBtn" type="button" style="margin-left:auto;padding:.5rem 1rem;border-radius:999px;border:1px solid #333;background:#fff;cursor:pointer;">Hide / Sembunyikan</button>
+  </div>
+  <h1>Prayer Journal / Jurnal Doa</h1>
+  <form method="post" id="journalForm">
+    {% csrf_token %}
+    <label for="id_content">Your Prayer / Doa Kamu</label>
+    <textarea id="id_content" name="content" rows="6" placeholder="God, today I felt... / Tuhan, hari ini aku merasa..." style="width:100%;padding:.9rem;border-radius:12px;border:1px solid #ccc;font-size:1rem;"></textarea>
+    <p id="saveStatus" aria-live="polite" style="color:#166534;font-weight:700;min-height:1.2rem;"></p>
+    <button type="submit" style="width:100%;padding:.9rem;border:none;border-radius:999px;background:#d4af37;font-weight:800;cursor:pointer;">Save Prayer / Simpan Doa</button>
+  </form>
+  <p style="font-size:.9rem;color:#666;">Your prayer is private. No one else can see it. / Doamu pribadi. Tidak ada yang bisa melihatnya.</p>
+</div>
+<script>
+(function(){
+  var ta=document.getElementById('id_content'); var status=document.getElementById('saveStatus'); var hide=document.getElementById('hideBtn');
+  if(!ta) return;
+  var key='glory_journal_draft';
+  try{ var d=localStorage.getItem(key); if(d && !ta.value) ta.value=d; }catch(e){}
+  var t; ta.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(function(){ try{ localStorage.setItem(key, ta.value); status.textContent='Draft saved / Draft tersimpan ✓'; }catch(e){} }, 800); });
+  document.getElementById('journalForm').addEventListener('submit', function(){ try{ localStorage.removeItem(key);}catch(e){} status.textContent='Saved / Tersimpan ✓'; });
+  if(hide){ hide.addEventListener('click', function(){ ta.value=''; ta.placeholder='Hidden / Disembunyikan - tap to write again'; ta.focus(); }); }
+})();
+</script>
+{% endblock %}
