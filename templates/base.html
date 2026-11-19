@@ -1,50 +1,12 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0a1020">
-  <meta name="description" content="A daily Christian companion for Scripture, prayer, and life.">
-  <meta name="color-scheme" content="dark">
-  <link rel="manifest" href="{% url 'manifest' %}">
-  <link rel="icon" href="/static/images/glory-mark.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/glory.css">
-  <title>{% block title %}GLORY — Faith & Living{% endblock %}</title>
-</head>
-<body>
-  <div class="ambient ambient-one" aria-hidden="true"></div>
-  <div class="ambient ambient-two" aria-hidden="true"></div>
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="GLORY home">
-      <span class="brand-mark"><img src="/static/images/glory-mark.svg" alt=""></span>
-      <span class="brand-copy"><strong>GLORY</strong><small>FAITH &amp; LIVING</small></span>
-    </a>
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="/#daily-word">Daily Word</a><a href="/#prayer">Prayer</a><a href="/#wisdom">Wisdom</a><a href="{% url 'journey' %}">My Journey</a>
-    </nav>
-    <div class="top-actions">
-      <button id="language-button" class="language-button" aria-label="Language selection coming soon" title="English is currently the only fully supported language" disabled>EN <span>·</span></button>
-      {% if request.user.is_authenticated %}
-        <a href="{% url 'journey' %}" class="profile-button" aria-label="My profile"><span>✧</span></a>
-      {% else %}
-        <a href="{% url 'login' %}" class="profile-button" aria-label="Sign in"><span>↗</span></a>
-      {% endif %}
-    </div>
-  </header>
-  <main>{% block content %}{% endblock %}</main>
-  <nav class="mobile-nav" aria-label="Mobile navigation">
-    <a class="active" href="/#home"><span>⌂</span><small>Home</small></a>
-    <a href="/#discover"><span>✧</span><small>Discover</small></a>
-    <a class="nav-ask" href="/#ask"><span>✦</span><small>Ask</small></a>
-    <a href="{% url 'journey' %}"><span>♡</span><small>My Faith</small></a>
-    <a href="{% if request.user.is_authenticated %}{% url 'journey' %}{% else %}{% url 'signup' %}{% endif %}"><span>◉</span><small>Profile</small></a>
+<header style="position:sticky;top:0;z-index:1000;pointer-events:auto;background:#0a1020;">
+  <nav style="position:relative;z-index:10;pointer-events:auto;display:flex;gap:12px;">
+    <a href="/" style="pointer-events:auto;cursor:pointer;">Daily Word</a>
+    <a href="/prayer/" style="pointer-events:auto;cursor:pointer;">Prayer</a>
+    <a href="/wisdom/" style="pointer-events:auto;cursor:pointer;">Wisdom</a>
+    <a href="/journey/" style="pointer-events:auto;cursor:pointer;">My Journey</a>
+    <span style="margin-left:auto;pointer-events:auto;">
+      <button type="button" onclick="window.location.href='?lang=id'" style="pointer-events:auto;cursor:pointer;">ID</button> |
+      <button type="button" onclick="window.location.href='?lang=en'" style="pointer-events:auto;cursor:pointer;">EN</button>
+    </span>
   </nav>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="/static/js/glory.js" defer></script>
-</body>
-  <div style="text-align:right;padding:.5rem 1rem;"><a href="?lang=id">ID</a> | <a href="?lang=en">EN</a></div>
-</html>
+</header>
