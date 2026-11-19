@@ -1,6 +1,19 @@
 """Core pages, account flows, private journal actions, and PWA resources."""
 import json
 
+# 009 Real Bahasa - Search + Language switch
+BAHASA_TOPICS = {
+    'keuangan': 'finances', 'keluarga': 'family', 'pekerjaan': 'work',
+    'kesehatan': 'health', 'duka': 'grief', 'stres': 'stress', 'cemas': 'anxiety',
+    'sekolah': 'school', 'ujian': 'exams', 'persahabatan': 'friendship',
+    'pengampunan': 'forgiveness', 'kesulitan': 'hardship', 'pertumbuhan': 'growth',
+}
+# In your wisdom search view, use:
+# q = request.GET.get('q','').lower().strip()
+# q = BAHASA_TOPICS.get(q, q)
+# lang = request.GET.get('lang') or request.session.get('lang','id')
+# request.session['lang'] = lang
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
